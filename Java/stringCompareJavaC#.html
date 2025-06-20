@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Java vs. C# String Method Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Indigo Accent -->
+    <!-- Application Structure Plan: The application uses a task-oriented "explorer" or "flashcard" design. Users view one string operation at a time for focused learning, with a clear side-by-side comparison for Java and C#. Navigation is facilitated by "Previous/Next" buttons for sequential exploration and a dropdown for direct access to specific methods. This structure was chosen over a static table to break down the information into digestible chunks, improving usability and retention, and making it an effective quick-reference tool for developers transitioning between the languages. -->
+    <!-- Visualization & Content Choices: The source report is a comparative table. This design transforms it into an interactive experience. Goal: Compare -> Presentation: Side-by-side columns updated dynamically. Interaction: User selects operation via dropdown or buttons. Goal: Highlight Key Differences -> Presentation: A distinctly styled "Key Difference" section. Interaction: Updates with the main content. This structure directly supports the report's goal of comparing the two languages' string methods in a more engaging and user-friendly format than a simple table. No charts are needed. All visuals are achieved with HTML/CSS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .code-block {
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #1f2937;
+        }
+        .nav-button {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Java vs. C# String Methods</h1>
+            <p class="text-slate-600 mt-2">An interactive guide for developers switching between languages.</p>
+        </header>
+
+        <main class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+            <section id="controls" class="mb-8">
+                <p class="text-sm text-slate-600 mb-2">Select a common string operation to compare:</p>
+                <div class="flex flex-col md:flex-row gap-4 items-center">
+                    <select id="operationSelector" class="w-full md:flex-grow p-3 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                    <div class="flex gap-4">
+                        <button id="prevBtn" class="nav-button bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg shadow-md">&larr; Prev</button>
+                        <button id="nextBtn" class="nav-button bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg shadow-md">Next &rarr;</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="comparison-area">
+                <h2 id="operationTitle" class="text-2xl font-bold text-indigo-700 mb-6 border-b-2 border-indigo-100 pb-3"></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div id="java-column">
+                        <h3 class="text-xl font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 inline-block bg-orange-400 rounded-full text-white flex items-center justify-center font-bold text-sm">Ja</span> Java</h3>
+                        <div id="java-content" class="code-block text-sm"></div>
+                    </div>
+                    <div id="csharp-column">
+                        <h3 class="text-xl font-semibold mb-3 flex items-center gap-2"><span class="w-8 h-8 inline-block bg-purple-500 rounded-full text-white flex items-center justify-center font-bold text-sm">C#</span> C#</h3>
+                        <div id="csharp-content" class="code-block text-sm"></div>
+                    </div>
+                </div>
+                <div id="key-difference-area" class="mt-8">
+                    <div class="bg-amber-100 border-l-4 border-amber-500 text-amber-800 p-4 rounded-r-lg">
+                        <h4 class="font-bold mb-1">&#9432; Key Difference</h4>
+                        <p id="key-difference-content" class="text-sm"></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const stringOperations = [
+            {
+                operation: "String Type Declaration",
+                javaMethod: "String myVar; // Capital 'S'",
+                csharpMethod: "string myVar; // Lowercase 's' keyword",
+                keyDifference: "Java uses `String` as the direct class name. C# conveniently uses `string` as a keyword alias for the `System.String` class."
+            },
+            {
+                operation: "Get String Length",
+                javaMethod: "int len = myString.length();",
+                csharpMethod: "int len = myString.Length;",
+                keyDifference: "Java uses a method with parentheses `length()`, while C# uses a property `Length` without parentheses."
+            },
+            {
+                operation: "Check if Empty",
+                javaMethod: "boolean isEmpty = myString.isEmpty();",
+                csharpMethod: "bool isEmpty = (myString.Length == 0);",
+                keyDifference: "Java provides a direct `isEmpty()` method for this check. In C#, the common practice is to check if the `Length` property is zero."
+            },
+            {
+                operation: "Check if Blank or Null",
+                javaMethod: "boolean isBlank = myString.isBlank(); // Java 11+\n// Older Java:\n(myString == null || myString.trim().isEmpty())",
+                csharpMethod: "bool isBlank = string.IsNullOrWhiteSpace(myString);",
+                keyDifference: "C# has a very convenient static helper method. Java 11+ introduced `isBlank()`, which is a great addition for the same purpose."
+            },
+            {
+                operation: "Get Character at Index",
+                javaMethod: "char c = myString.charAt(0);",
+                csharpMethod: "char c = myString[0];",
+                keyDifference: "Java uses the `charAt()` method, whereas C# uses array-like square bracket notation (an indexer) to access characters."
+            },
+            {
+                operation: "Get a Substring",
+                javaMethod: "String sub = myString.substring(6, 11); // from index 6 up to (but not including) index 11",
+                csharpMethod: "string sub = myString.Substring(6, 5); // from index 6, for a length of 5 characters",
+                keyDifference: "This is a crucial difference. Java's second parameter is the exclusive 'end index'. C#'s second parameter is the 'length' of the desired substring."
+            },
+            {
+                operation: "Compare for Exact Equality",
+                javaMethod: "boolean areEqual = str1.equals(str2);",
+                csharpMethod: "bool areEqual = str1.Equals(str2);\n// or more commonly:\nbool areEqual = (str1 == str2);",
+                keyDifference: "In Java, you MUST use `.equals()` for content comparison; `==` compares object references. In C#, the `==` operator is overloaded for strings to compare content, making it a common and convenient choice."
+            },
+             {
+                operation: "Compare Ignoring Case",
+                javaMethod: "boolean areEqual = str1.equalsIgnoreCase(str2);",
+                csharpMethod: "bool areEqual = str1.Equals(str2, StringComparison.OrdinalIgnoreCase);",
+                keyDifference: "Java has a dedicated `equalsIgnoreCase` method. C# uses an overload of `Equals` and requires you to specify the comparison type."
+            },
+            {
+                operation: "Replace All Substrings",
+                javaMethod: "String newStr = myString.replace(\"Java\", \"Kotlin\");",
+                csharpMethod: "string newStr = myString.Replace(\"C#\", \"F#\");",
+                keyDifference: "The method names (`replace` vs `Replace`) follow the standard casing conventions of each language (camelCase for Java, PascalCase for C#)."
+            },
+             {
+                operation: "Split String into Array",
+                javaMethod: "String[] parts = myString.split(\",\"); // Delimiter is a REGEX",
+                csharpMethod: "string[] parts = myString.Split(','); // Delimiter is a CHAR",
+                keyDifference: "This is another critical difference. Java's `split` method uses a regular expression for the delimiter, which is powerful but can be tricky. C#'s `Split` typically uses a simple character or an array of characters, which is more straightforward for simple cases."
+            },
+            {
+                operation: "Join Array into String",
+                javaMethod: "String joined = String.join(\"-\", parts); // Java 8+",
+                csharpMethod: "string joined = string.Join(\"-\", parts);",
+                keyDifference: "Functionality is nearly identical, provided by a static `join` method in both languages. The main difference is the casing of the method and class name."
+            },
+             {
+                operation: "Efficiently Build Strings",
+                javaMethod: "StringBuilder sb = new StringBuilder();\nsb.append(\"text\");",
+                csharpMethod: "System.Text.StringBuilder sb = new System.Text.StringBuilder();\nsb.Append(\"text\");",
+                keyDifference: "Both languages use a `StringBuilder` class for efficient string construction to avoid creating many temporary objects. The concept is identical, but the class resides in a different namespace in C# and method casing differs."
+            }
+        ];
+
+        let currentIndex = 0;
+
+        const operationSelector = document.getElementById('operationSelector');
+        const operationTitle = document.getElementById('operationTitle');
+        const javaContent = document.getElementById('java-content');
+        const csharpContent = document.getElementById('csharp-content');
+        const keyDifferenceContent = document.getElementById('key-difference-content');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function populateSelector() {
+            stringOperations.forEach((op, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = op.operation;
+                operationSelector.appendChild(option);
+            });
+        }
+
+        function renderComparison(index) {
+            if (index < 0 || index >= stringOperations.length) return;
+
+            const op = stringOperations[index];
+            currentIndex = index;
+
+            operationTitle.textContent = op.operation;
+            javaContent.textContent = op.javaMethod;
+            csharpContent.textContent = op.csharpMethod;
+            keyDifferenceContent.textContent = op.keyDifference;
+            
+            operationSelector.value = index;
+
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === stringOperations.length - 1;
+        }
+
+        operationSelector.addEventListener('change', (e) => {
+            renderComparison(parseInt(e.target.value));
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                renderComparison(currentIndex - 1);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < stringOperations.length - 1) {
+                renderComparison(currentIndex + 1);
+            }
+        });
+
+        window.onload = () => {
+            populateSelector();
+            renderComparison(0);
+        };
+    </script>
+</body>
+</html>
