@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Java Logical Operators</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Cool Gray with Indigo/Emerald/Rose accents -->
+    <!-- Application Structure Plan: The application is structured as an interactive "Logic Lab." The top section contains the primary controls: two prominent toggle switches for boolean inputs 'A' and 'B'. Below, a responsive grid displays the real-time results for all logical operators. This structure was chosen to create a direct cause-and-effect learning environment. By changing an input, the user instantly sees the consequence across all related operations, which is crucial for understanding nuanced differences (like short-circuit vs. non-short-circuit operators). The user flow is focused and simple: toggle inputs -> observe outcomes. -->
+    <!-- Visualization & Content Choices: The source table is converted into a dynamic dashboard. Goal: To demonstrate and compare Java's logical operators. Presentation Method: Two boolean toggles (styled checkboxes) control the inputs. A grid of styled HTML cards displays the results. Interaction: Users click the 'A' and 'B' toggles. A JavaScript 'change' event listener recalculates all operator results and updates the UI. Each result card shows the operator, its name, the full expression, and a color-coded boolean result (green for true, red for false). Justification: This interactive model turns passive reading into active experimentation. It's more effective for grasping abstract logical concepts. A key addition is the short-circuiting explanation on relevant cards, providing deeper context. Library/Method: Vanilla JS for all logic, Tailwind CSS for styling. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@500&display=swap');
+        body {
+            background-color: #f3f4f6; /* gray-100 */
+            font-family: 'Inter', sans-serif;
+        }
+        .font-fira {
+            font-family: 'Fira Code', monospace;
+        }
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #4f46e5; /* indigo-600 */
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4f46e5; /* indigo-600 */
+        }
+        .result-card {
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+        }
+        .result-true {
+            background-color: #059669; /* emerald-600 */
+            color: white;
+        }
+        .result-false {
+            background-color: #e11d48; /* rose-600 */
+            color: white;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">Java Logical Operator Explorer</h1>
+            <p class="mt-2 text-lg text-gray-600 max-w-3xl mx-auto">This interactive tool demonstrates how Java's logical operators work. Flip the switches for boolean values 'A' and 'B' to see how each expression evaluates instantly. This helps clarify the difference between standard and short-circuit operators.</p>
+        </header>
+
+        <section class="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-lg mb-8">
+            <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Control Panel</h2>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-8">
+                <!-- Toggle A -->
+                <div class="flex items-center space-x-4">
+                    <span class="text-4xl font-fira font-bold text-indigo-600">A</span>
+                    <div class="relative inline-block w-14 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" name="toggleA" id="toggleA" class="toggle-checkbox absolute block w-7 h-7 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                        <label for="toggleA" class="toggle-label block overflow-hidden h-7 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                    <span id="valueA" class="text-2xl font-bold w-16 text-left">true</span>
+                </div>
+                <!-- Toggle B -->
+                <div class="flex items-center space-x-4">
+                     <span class="text-4xl font-fira font-bold text-indigo-600">B</span>
+                    <div class="relative inline-block w-14 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" name="toggleB" id="toggleB" class="toggle-checkbox absolute block w-7 h-7 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                        <label for="toggleB" class="toggle-label block overflow-hidden h-7 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                    <span id="valueB" class="text-2xl font-bold w-16 text-left">false</span>
+                </div>
+            </div>
+        </section>
+
+        <main id="results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Operator cards will be injected by JS -->
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const operators = [
+                { op: '&&', name: 'Logical AND', description: 'Short-circuit. If A is false, B is not evaluated.' },
+                { op: '||', name: 'Logical OR', description: 'Short-circuit. If A is true, B is not evaluated.' },
+                { op: '!', name: 'Logical NOT', description: 'Inverts the boolean value. Only uses A.' },
+                { op: '&', name: 'Bitwise AND', description: 'Non-short-circuit. Always evaluates both A and B.' },
+                { op: '|', name: 'Bitwise OR', description: 'Non-short-circuit. Always evaluates both A and B.' },
+                { op: '^', name: 'Bitwise XOR', description: 'True if A and B are different.' },
+            ];
+
+            const toggleA = document.getElementById('toggleA');
+            const toggleB = document.getElementById('toggleB');
+            const valueA_span = document.getElementById('valueA');
+            const valueB_span = document.getElementById('valueB');
+            const resultsGrid = document.getElementById('results-grid');
+
+            const render = () => {
+                const A = toggleA.checked;
+                const B = toggleB.checked;
+
+                valueA_span.textContent = A;
+                valueB_span.textContent = B;
+                valueA_span.className = `text-2xl font-bold w-16 text-left ${A ? 'text-emerald-600' : 'text-rose-600'}`;
+                valueB_span.className = `text-2xl font-bold w-16 text-left ${B ? 'text-emerald-600' : 'text-rose-600'}`;
+                
+                resultsGrid.innerHTML = '';
+
+                operators.forEach(opInfo => {
+                    let result;
+                    let expression;
+
+                    if (opInfo.op === '!') {
+                        result = !A;
+                        expression = `!${A}`;
+                    } else {
+                        switch(opInfo.op) {
+                            case '&&': result = A && B; break;
+                            case '||': result = A || B; break;
+                            case '&':  result = A & B; break;
+                            case '|':  result = A | B; break;
+                            case '^':  result = A ^ B; break;
+                        }
+                        expression = `${A} ${opInfo.op} ${B}`;
+                    }
+                    
+                    const card = document.createElement('div');
+                    card.className = 'result-card bg-white rounded-xl p-5 flex flex-col justify-between border border-gray-200';
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-fira text-3xl font-bold text-indigo-600">${opInfo.op}</span>
+                                <span class="px-3 py-1 text-sm font-bold rounded-full ${result ? 'result-true' : 'result-false'}">${result}</span>
+                            </div>
+                            <p class="text-gray-800 font-semibold text-lg">${opInfo.name}</p>
+                            <p class="text-gray-500 text-sm mt-1">${opInfo.description}</p>
+                        </div>
+                        <div class="mt-4 text-center bg-gray-100 text-gray-800 font-fira rounded-md p-3 text-xl">
+                            <span class="whitespace-nowrap">${expression}</span>
+                        </div>
+                    `;
+                    resultsGrid.appendChild(card);
+                });
+            };
+
+            toggleA.addEventListener('change', render);
+            toggleB.addEventListener('change', render);
+
+            render(); // Initial render
+        });
+    </script>
+
+</body>
+</html>
