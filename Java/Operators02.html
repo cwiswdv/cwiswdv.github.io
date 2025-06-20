@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Java Operators</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Slate and Sky Blue -->
+    <!-- Application Structure Plan: The application is designed as an interactive cheatsheet. The primary structure is a responsive grid of "operator cards." Each card initially displays only the operator symbol for a clean, minimalist look. Clicking a card expands it to reveal a detailed description, a code example, and a "live calculator" feature. This interactive, hands-on approach was chosen because it's more engaging and effective for the target audience (new Java developers) than a passive table. The user flow is simple: see the grid, click an operator of interest, and experiment directly. This promotes learning through exploration and immediate feedback. -->
+    <!-- Visualization & Content Choices: The report's tabular data is transformed into interactive cards. Goal: Inform & Experiment. Presentation: HTML/Tailwind for card structure, JS for interaction. Interaction: Each card is a self-contained module with a click-to-expand feature and a live calculator. The calculator allows users to input their own numbers and see the result of the specific Java operator, reinforcing the concept. Unary operators (increment/decrement) have a slightly modified calculator to fit their single-operand nature. This structure directly supports the application's goal of being an active learning tool. Justification: This method is superior to a static chart for teaching programming concepts as it provides immediate, tangible feedback. Library/Method: Vanilla JS for all logic, Tailwind CSS for styling. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            background-color: #f8fafc; /* slate-50 */
+            font-family: 'Inter', sans-serif;
+        }
+        .operator-card {
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .operator-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .details-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .details-panel.open {
+            max-height: 500px; /* Adjust as needed */
+        }
+        .btn {
+            transition: background-color 0.2s ease-in-out;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-slate-900">Java Mathematical Operators</h1>
+            <p class="mt-2 text-lg text-slate-600 max-w-3xl mx-auto">An interactive guide to Java's core arithmetic operators. Click on any operator card below to see details and experiment with a live example.</p>
+        </header>
+
+        <main id="operator-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Operator cards will be injected here by JavaScript -->
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const operators = [
+                { op: '+', name: 'Addition', desc: 'Adds two values together.', example: 'a + b', type: 'binary' },
+                { op: '-', name: 'Subtraction', desc: 'Subtracts the right operand from the left operand.', example: 'a - b', type: 'binary' },
+                { op: '*', name: 'Multiplication', desc: 'Multiplies two values.', example: 'a * b', type: 'binary' },
+                { op: '/', name: 'Division', desc: 'Divides the left operand by the right operand. Returns an integer result if both operands are integers.', example: 'a / b', type: 'binary' },
+                { op: '%', name: 'Modulus', desc: 'Returns the remainder of a division operation.', example: 'a % b', type: 'binary' },
+                { op: '++', name: 'Increment', desc: 'Increases the value of a variable by 1.', example: 'a++', type: 'unary' },
+                { op: '--', name: 'Decrement', desc: 'Decreases the value of a variable by 1.', example: 'a--', type: 'unary' },
+            ];
+
+            const grid = document.getElementById('operator-grid');
+
+            operators.forEach((op, index) => {
+                const card = document.createElement('div');
+                card.className = 'operator-card bg-white rounded-xl overflow-hidden cursor-pointer';
+                card.innerHTML = `
+                    <div class="p-6 flex justify-center items-center bg-sky-500 text-white">
+                        <h2 class="text-5xl font-mono font-bold">${op.op}</h2>
+                        <h3 class="ml-4 text-2xl font-semibold">${op.name}</h3>
+                    </div>
+                    <div id="details-${index}" class="details-panel">
+                        <div class="p-6 border-t border-slate-200">
+                            <p class="text-slate-600 mb-4">${op.desc}</p>
+                            <div class="bg-slate-100 rounded-lg p-4">
+                                <h4 class="font-semibold mb-2 text-slate-700">Live Example</h4>
+                                <div class="space-y-3">
+                                    ${op.type === 'binary' ? `
+                                    <div class="flex items-center space-x-2">
+                                        <label for="a-${index}" class="font-mono text-sm">a =</label>
+                                        <input type="number" id="a-${index}" value="10" class="w-full p-2 rounded-md border-slate-300 border">
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <label for="b-${index}" class="font-mono text-sm">b =</label>
+                                        <input type="number" id="b-${index}" value="3" class="w-full p-2 rounded-md border-slate-300 border">
+                                    </div>
+                                    ` : `
+                                    <div class="flex items-center space-x-2">
+                                        <label for="a-${index}" class="font-mono text-sm">a =</label>
+                                        <input type="number" id="a-${index}" value="10" class="w-full p-2 rounded-md border-slate-300 border">
+                                    </div>
+                                    `}
+                                </div>
+                                <button id="calc-${index}" class="btn w-full mt-4 bg-sky-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50">
+                                    Calculate
+                                </button>
+                                <div class="mt-4 bg-slate-800 text-white font-mono text-sm rounded-md p-3">
+                                    <p class="whitespace-pre">> <span id="code-example-${index}">${op.example}</span></p>
+                                    <p class="whitespace-pre mt-1">> <span id="result-${index}" class="font-bold text-green-400">...</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+                
+                const detailsPanel = document.getElementById(`details-${index}`);
+                card.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+                    
+                    const currentlyOpen = document.querySelector('.details-panel.open');
+                    if(currentlyOpen && currentlyOpen !== detailsPanel) {
+                        currentlyOpen.classList.remove('open');
+                    }
+                    detailsPanel.classList.toggle('open');
+                });
+
+                const calcButton = document.getElementById(`calc-${index}`);
+                calcButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const aInput = document.getElementById(`a-${index}`);
+                    const bInput = document.getElementById(`b-${index}`);
+                    const resultDisplay = document.getElementById(`result-${index}`);
+
+                    let a = parseFloat(aInput.value);
+                    let b = op.type === 'binary' ? parseFloat(bInput.value) : null;
+                    let result;
+
+                    if (isNaN(a) || (b !== null && isNaN(b))) {
+                        resultDisplay.textContent = 'Invalid input';
+                        resultDisplay.classList.add('text-red-400');
+                        return;
+                    }
+                     resultDisplay.classList.remove('text-red-400');
+                     resultDisplay.classList.add('text-green-400');
+
+
+                    switch(op.op) {
+                        case '+': result = a + b; break;
+                        case '-': result = a - b; break;
+                        case '*': result = a * b; break;
+                        case '/': 
+                            if (b === 0) {
+                                result = 'Error: Division by zero';
+                                resultDisplay.classList.add('text-red-400');
+                            } else {
+                                // Emulate Java's integer division for integers
+                                if (Number.isInteger(a) && Number.isInteger(b)) {
+                                    result = Math.trunc(a / b);
+                                } else {
+                                    result = a / b;
+                                }
+                            }
+                            break;
+                        case '%': 
+                             if (b === 0) {
+                                result = 'Error: Division by zero';
+                                resultDisplay.classList.add('text-red-400');
+                            } else {
+                                result = a % b;
+                            }
+                            break;
+                        case '++': result = a + 1; aInput.value = result; break;
+                        case '--': result = a - 1; aInput.value = result; break;
+                    }
+                    
+                    if(typeof result === 'number') {
+                        resultDisplay.textContent = result;
+                    } else {
+                        resultDisplay.textContent = result;
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

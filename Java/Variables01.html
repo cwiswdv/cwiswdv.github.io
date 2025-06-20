@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Java Tutorial: Summing Two Numbers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate & Amber -->
+    <!-- Application Structure Plan: A single-page, dual-column, interactive comparison layout. The left side will feature a sticky navigation/control panel allowing users to toggle between two approaches: 'Fixed Numbers' and 'User Input'. The main content area on the right will dynamically update to show a detailed breakdown of the selected approach. This breakdown includes an introduction, an interactive process flow diagram (using Chart.js as a creative way to show steps), a code block, and key takeaways. This structure was chosen because the source report's primary goal is to compare two distinct methods. A toggle-based interactive view makes this comparison direct and intuitive, allowing users to focus on one concept at a time while easily switching to see the differences, which is more effective for learning than a static, linear presentation. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: Title Slide -> Goal: Inform -> Presentation: Main header (h1) -> Interaction: None. Justification: Establishes context.
+        - Report Info: What We'll Cover -> Goal: Inform/Orient -> Presentation: Introductory paragraph under the main header. -> Interaction: None. Justification: Sets the stage for the user.
+        - Report Info: Slide 3 & 5 (Concepts) -> Goal: Compare/Inform -> Presentation: Two main sections, toggled by buttons. Each section has a title, descriptive text, and key points in a list. -> Interaction: Main toggle buttons. Justification: This is the core interaction, directly translating the report's comparison structure into an interactive format.
+        - Report Info: Code from Slide 4 & 6 -> Goal: Detail/Explore -> Presentation: A syntax-highlighted code block within each respective section. -> Interaction: The code block's visibility is tied to the main toggle. Justification: Presents the core technical information in a clean, readable format.
+        - Report Info: Process logic (implicit) -> Goal: Organize/Visualize Process -> Presentation: A horizontal bar chart from Chart.js used as a visual process flow diagram. -> Interaction: The chart data dynamically updates when the user toggles between 'Fixed Numbers' and 'User Input' to show the different steps (e.g., 'User Input' has an extra 'Read Input' step). Justification: Provides a novel, engaging, and clear visual representation of the process differences, which is more impactful than just text.
+        - Report Info: Key Takeaways (Slide 7) -> Goal: Summarize -> Presentation: A concluding section with key points. -> Interaction: Static content at the bottom. Justification: Reinforces learning.
+        - Library/Method: Tailwind CSS for layout, Chart.js for the process flow diagram.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .code-block {
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.875rem;
+        }
+        .code-keyword { color: #93c5fd; } /* blue-300 */
+        .code-type { color: #6ee7b7; } /* emerald-300 */
+        .code-string { color: #fcd34d; } /* amber-300 */
+        .code-comment { color: #9ca3af; } /* gray-400 */
+        .code-number { color: #f0abfc; } /* fuchsia-300 */
+        .nav-btn {
+            transition: all 0.3s ease;
+        }
+        .nav-btn.active {
+            background-color: #fbbf24; /* amber-400 */
+            color: #1e293b; /* slate-800 */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 300px;
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl lg:text-5xl font-bold text-slate-900">Summing Numbers in Java</h1>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">An interactive guide to the fundamental concepts of variables, arithmetic operations, and user input. This application translates a presentation into an explorable experience, allowing you to compare two common methods for adding numbers.</p>
+        </header>
+
+        <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+            <!-- Navigation / Control Panel -->
+            <aside class="lg:w-1/4 lg:sticky lg:top-8 self-start">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-slate-900 mb-4">Choose an Approach</h3>
+                    <div class="flex flex-col gap-3">
+                        <button id="btn-fixed" class="nav-btn w-full text-left font-semibold py-3 px-4 rounded-lg bg-slate-100 hover:bg-amber-300">
+                            1. With Fixed Numbers
+                        </button>
+                        <button id="btn-input" class="nav-btn w-full text-left font-semibold py-3 px-4 rounded-lg bg-slate-100 hover:bg-amber-300">
+                            2. With User Input
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="lg:w-3/4">
+                <!-- Section for Fixed Numbers -->
+                <section id="section-fixed">
+                    <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg">
+                        <h2 class="text-3xl font-bold text-slate-900 mb-2">Basic Addition with Predefined Values</h2>
+                        <p class="mb-6 text-slate-600">This is the simplest method, where the numbers to be added are "hardcoded" directly into the program. It's great for understanding the basic structure of a Java program, variable declaration, and arithmetic operations without the complexity of handling user input.</p>
+                        
+                        <div class="mb-8">
+                            <h4 class="text-xl font-semibold text-slate-800 mb-3">Process Flow</h4>
+                            <div class="chart-container">
+                                <canvas id="chart-fixed"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <h4 class="text-xl font-semibold text-slate-800 mb-3">Key Concepts</h4>
+                            <ul class="list-disc list-inside space-y-2 text-slate-600">
+                                <li><strong>Variable Declaration:</strong> Two `int` (integer) variables, `number1` and `number2`, are created and immediately assigned values.</li>
+                                <li><strong>Arithmetic Operation:</strong> The `+` operator is used to add the values of the two variables, storing the result in a new variable called `sum`.</li>
+                                <li><strong>Console Output:</strong> The `System.out.println()` method is used to print the results to the console, providing a human-readable output.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                             <h4 class="text-xl font-semibold text-slate-800 mb-3">Code Example: <span class="font-mono text-lg bg-slate-100 text-amber-600 px-2 py-1 rounded">VariableExample.java</span></h4>
+                             <div class="code-block" id="code-fixed"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section for User Input -->
+                <section id="section-input" class="hidden">
+                    <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg">
+                        <h2 class="text-3xl font-bold text-slate-900 mb-2">Making it Interactive: Getting Numbers from the User</h2>
+                        <p class="mb-6 text-slate-600">This approach makes the program dynamic by allowing the user to provide the numbers at runtime. This introduces the concept of input handling, a crucial part of building interactive applications.</p>
+                        
+                        <div class="mb-8">
+                            <h4 class="text-xl font-semibold text-slate-800 mb-3">Process Flow</h4>
+                            <div class="chart-container">
+                                <canvas id="chart-input"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <h4 class="text-xl font-semibold text-slate-800 mb-3">Key Concepts</h4>
+                            <ul class="list-disc list-inside space-y-2 text-slate-600">
+                                <li><strong>Importing a Class:</strong> `import java.util.Scanner;` makes the `Scanner` class available, which is Java's tool for reading user input.</li>
+                                <li><strong>Creating an Object:</strong> `new Scanner(System.in)` creates a `Scanner` object that listens for input from the standard input stream (the console).</li>
+                                <li><strong>Reading Input:</strong> The `inputScanner.nextInt()` method pauses the program and waits for the user to type a number and press Enter.</li>
+                                <li><strong>Resource Management:</strong> `inputScanner.close()` is important for releasing system resources associated with the scanner once it's no longer needed.</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-xl font-semibold text-slate-800 mb-3">Code Example: <span class="font-mono text-lg bg-slate-100 text-amber-600 px-2 py-1 rounded">AcceptInputAdd2Numbers.java</span></h4>
+                            <div class="code-block" id="code-input"></div>
+                        </div>
+                    </div>
+                </section>
+                
+                <footer class="mt-12 text-center text-slate-500">
+                    <p>This interactive experience was generated based on the "Summing Numbers in Java" presentation.</p>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnFixed = document.getElementById('btn-fixed');
+            const btnInput = document.getElementById('btn-input');
+            const sectionFixed = document.getElementById('section-fixed');
+            const sectionInput = document.getElementById('section-input');
+
+            const codeFixedContainer = document.getElementById('code-fixed');
+            const codeInputContainer = document.getElementById('code-input');
+
+            const codeFixedContent = `
+<span class="code-keyword">public</span> <span class="code-keyword">class</span> <span class="code-type">VariableExample</span> {
+    <span class="code-keyword">public</span> <span class="code-keyword">static</span> <span class="code-keyword">void</span> <span class="code-type">main</span>(<span class="code-type">String</span>[] args) {
+        <span class="code-comment">// Declare and initialize two integer variables</span>
+        <span class="code-type">int</span> number1 = <span class="code-number">15</span>;
+        <span class="code-type">int</span> number2 = <span class="code-number">25</span>;
+
+        <span class="code-comment">// Calculate the sum</span>
+        <span class="code-type">int</span> sum = number1 + number2;
+
+        <span class="code-comment">// Print the result to the console</span>
+        <span class="code-type">System</span>.out.println(<span class="code-string">"The first number is: "</span> + number1);
+        <span class="code-type">System</span>.out.println(<span class="code-string">"The second number is: "</span> + number2);
+        <span class="code-type">System</span>.out.println(<span class="code-string">"The sum of the two numbers is: "</span> + sum);
+    }
+}`;
+
+            const codeInputContent = `
+<span class="code-keyword">import</span> java.util.<span class="code-type">Scanner</span>; <span class="code-comment">// Import the Scanner class to read user input</span>
+
+<span class="code-keyword">public</span> <span class="code-keyword">class</span> <span class="code-type">AcceptInputAdd2Numbers</span> {
+    <span class="code-keyword">public</span> <span class="code-keyword">static</span> <span class="code-keyword">void</span> <span class="code-type">main</span>(<span class="code-type">String</span>[] args) {
+        <span class="code-comment">// Create a Scanner object to read input from the console</span>
+        <span class="code-type">Scanner</span> inputScanner = <span class="code-keyword">new</span> <span class="code-type">Scanner</span>(<span class="code-type">System</span>.in);
+
+        <span class="code-type">System</span>.out.print(<span class="code-string">"Enter the first whole number: "</span>);
+        <span class="code-comment">// Read the first integer entered by the user</span>
+        <span class="code-type">int</span> number1 = inputScanner.nextInt();
+
+        <span class="code-type">System</span>.out.print(<span class="code-string">"Enter the second whole number: "</span>);
+        <span class="code-comment">// Read the second integer entered by the user</span>
+        <span class="code-type">int</span> number2 = inputScanner.nextInt();
+
+        <span class="code-comment">// Calculate the sum</span>
+        <span class="code-type">int</span> sum = number1 + number2;
+
+        <span class="code-comment">// Print the result</span>
+        <span class="code-type">System</span>.out.println(<span class="code-string">"The sum of "</span> + number1 + <span class="code-string">" and "</span> + number2 + <span class="code-string">" is: "</span> + sum);
+
+        <span class="code-comment">// Close the scanner to prevent resource leaks</span>
+        inputScanner.close();
+    }
+}`;
+            
+            codeFixedContainer.innerHTML = codeFixedContent;
+            codeInputContainer.innerHTML = codeInputContent;
+
+            let activeChartFixed = null;
+            let activeChartInput = null;
+
+            function showFixed() {
+                sectionFixed.classList.remove('hidden');
+                sectionInput.classList.add('hidden');
+                btnFixed.classList.add('active');
+                btnInput.classList.remove('active');
+                renderChartFixed();
+            }
+
+            function showInput() {
+                sectionFixed.classList.add('hidden');
+                sectionInput.classList.remove('hidden');
+                btnInput.classList.add('active');
+                btnFixed.classList.remove('active');
+                renderChartInput();
+            }
+
+            btnFixed.addEventListener('click', showFixed);
+            btnInput.addEventListener('click', showInput);
+
+            const chartOptions = {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    tooltip: {
+                        enabled: false,
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false,
+                            drawBorder: false,
+                        },
+                        ticks: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false,
+                            drawBorder: false,
+                        },
+                         ticks: {
+                            font: {
+                                size: 14,
+                                weight: '500'
+                            },
+                            color: '#334155' // slate-700
+                        }
+                    }
+                }
+            };
+
+            function renderChartFixed() {
+                if (activeChartFixed) {
+                    activeChartFixed.destroy();
+                }
+                const ctx = document.getElementById('chart-fixed').getContext('2d');
+                activeChartFixed = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['1. Declare & Initialize', '2. Calculate Sum', '3. Print Result'],
+                        datasets: [{
+                            label: 'Steps',
+                            data: [1, 1, 1],
+                            backgroundColor: ['#60a5fa', '#f59e0b', '#10b981'],
+                            borderColor: ['#3b82f6', '#d97706', '#059669'],
+                            borderWidth: 1,
+                            barThickness: 30,
+                        }]
+                    },
+                    options: chartOptions
+                });
+            }
+
+            function renderChartInput() {
+                if (activeChartInput) {
+                    activeChartInput.destroy();
+                }
+                const ctx = document.getElementById('chart-input').getContext('2d');
+                activeChartInput = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['1. Setup Scanner', '2. Prompt & Read Input', '3. Calculate Sum', '4. Print Result', '5. Close Scanner'],
+                        datasets: [{
+                            label: 'Steps',
+                            data: [1, 1, 1, 1, 1],
+                            backgroundColor: ['#60a5fa', '#a78bfa', '#f59e0b', '#10b981', '#ef4444'],
+                            borderColor: ['#3b82f6', '#8b5cf6', '#d97706', '#059669', '#dc2626'],
+                            borderWidth: 1,
+                            barThickness: 30,
+                        }]
+                    },
+                    options: chartOptions
+                });
+            }
+            
+            showFixed();
+        });
+    </script>
+</body>
+</html>
