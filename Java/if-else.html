@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java vs. C# if/else Statements</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font and basic body styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light gray background */
+            color: #333;
+            line-height: 1.6;
+            padding: 20px; /* Padding around the entire content */
+        }
+        /* Basic styling for code blocks */
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        code {
+            font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+            background-color: #e2e8f0;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            color: #c53030; /* A darker red for inline code */
+        }
+    </style>
+</head>
+<body>
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-xl border border-gray-200">
+        <h1 class="text-4xl font-extrabold text-center text-blue-800 mb-6 pb-2 border-b-4 border-blue-600 rounded-b-md">
+            Understanding `if/else` Statements: Java vs. C#
+        </h1>
+
+        <section class="mb-8 p-6 bg-blue-50 rounded-lg border border-blue-200 shadow-sm">
+            <h2 class="text-2xl font-semibold text-blue-700 mb-4">Introduction</h2>
+            <p class="text-gray-700 leading-relaxed">
+                Decision-making is a core concept in programming, allowing our applications to perform different actions based on various conditions. In both Java and C#, the <code>if/else</code> statement is the fundamental construct for achieving this. While they are distinct programming languages, their approach to conditional logic with <code>if/else</code> statements is strikingly similar. This page will compare and contrast their syntax and usage.
+            </p>
+        </section>
+
+        <section class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b-2 pb-2 border-gray-300">Java `if/else` Statements</h2>
+            <p class="text-gray-700 mb-4">
+                In Java, the <code>if/else</code> statement evaluates a boolean expression. If the expression is <code>true</code>, the code block within the <code>if</code> statement is executed. Otherwise, if an <code>else</code> block is present, its code is executed.
+            </p>
+            <p class="text-gray-700 mb-4 font-medium">Basic Syntax:</p>
+            <pre><code class="language-java">
+if (condition) {
+    // Code to execute if condition is true
+} else {
+    // Code to execute if condition is false
+}
+
+// Example of an if-else if-else ladder:
+if (condition1) {
+    // Code if condition1 is true
+} else if (condition2) {
+    // Code if condition1 is false AND condition2 is true
+} else {
+    // Code if all preceding conditions are false
+}
+            </code></pre>
+            <p class="text-gray-700 mb-4 font-medium">Java Example:</p>
+            <pre><code class="language-java">
+public class GradeChecker {
+    public static void main(String[] args) {
+        int score = 75;
+
+        if (score >= 90) {
+            System.out.println("Grade: A");
+        } else if (score >= 80) {
+            System.out.println("Grade: B");
+        } else if (score >= 70) {
+            System.out.println("Grade: C");
+        } else {
+            System.out.println("Grade: F");
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b-2 pb-2 border-gray-300">C# `if/else` Statements</h2>
+            <p class="text-gray-700 mb-4">
+                C# also uses a very similar syntax for <code>if/else</code> statements. It evaluates a boolean expression, executing the <code>if</code> block if <code>true</code>, and the <code>else</code> block if <code>false</code>.
+            </p>
+            <p class="text-gray-700 mb-4 font-medium">Basic Syntax:</p>
+            <pre><code class="language-csharp">
+if (condition)
+{
+    // Code to execute if condition is true
+}
+else
+{
+    // Code to execute if condition is false
+}
+
+// Example of an if-else if-else ladder:
+if (condition1)
+{
+    // Code if condition1 is true
+}
+else if (condition2)
+{
+    // Code if condition1 is false AND condition2 is true
+}
+else
+{
+    // Code if all preceding conditions are false
+}
+            </code></pre>
+            <p class="text-gray-700 mb-4 font-medium">C# Example:</p>
+            <pre><code class="language-csharp">
+using System;
+
+public class GradeChecker
+{
+    public static void Main(string[] args)
+    {
+        int score = 75;
+
+        if (score >= 90)
+        {
+            Console.WriteLine("Grade: A");
+        }
+        else if (score >= 80)
+        {
+            Console.WriteLine("Grade: B");
+        }
+        else if (score >= 70)
+        {
+            Console.WriteLine("Grade: C");
+        }
+        else
+        {
+            Console.WriteLine("Grade: F");
+        }
+    }
+}
+            </code></pre>
+        </section>
+
+        <section class="mb-8 p-6 bg-green-50 rounded-lg border border-green-200 shadow-sm">
+            <h2 class="text-2xl font-semibold text-green-700 mb-4 border-b-2 pb-2 border-green-300">Key Similarities and Minor Differences</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                The core mechanics and syntax of <code>if/else</code> statements in Java and C# are nearly identical, which is beneficial for developers transitioning between the two languages.
+            </p>
+            <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+                <li><strong>Identical Keywords:</strong> Both use <code>if</code> and <code>else</code>.</li>
+                <li><strong>Condition Parentheses:</strong> Conditions must be enclosed in parentheses <code>()</code> in both.</li>
+                <li><strong>Code Block Delimiters:</strong> Curly braces <code>{}</code> are used to define code blocks for both.</li>
+                <li><strong>`else if` Ladder:</strong> Both support the <code>else if</code> (or <code>else if</code>) construct for chaining multiple conditions.</li>
+                <li><strong>Optional Braces:</strong> For a single statement within an <code>if</code> or <code>else</code> block, the curly braces are technically optional in both languages, though using them is highly recommended for clarity and preventing logical errors.</li>
+            </ul>
+            <p class="text-gray-700 leading-relaxed font-medium">The most notable "syntax" difference you'll encounter is in how you print output to the console:</p>
+            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li><strong>Java:</strong> Uses <code>System.out.println("Your message");</code></li>
+                <li><strong>C#:</strong> Uses <code>Console.WriteLine("Your message");</code></li>
+            </ul>
+        </section>
+
+        <section class="p-6 bg-blue-50 rounded-lg border border-blue-200 shadow-sm">
+            <h2 class="text-2xl font-semibold text-blue-700 mb-4">Conclusion</h2>
+            <p class="text-gray-700 leading-relaxed">
+                For community college students learning programming, understanding that fundamental control structures like <code>if/else</code> are consistent across popular languages like Java and C# can be very reassuring. It highlights that once you grasp the underlying logic of decision-making, adapting to different language syntaxes becomes much easier, often involving only minor adjustments in method calls or surrounding boilerplate code.
+            </p>
+        </section>
+    </div>
+</body>
+</html>
