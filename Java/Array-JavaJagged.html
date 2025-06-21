@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Jagged Array Visualizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* rounded-3xl */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+            position: relative; /* For positioning connection lines */
+        }
+        .array-box {
+            display: flex;
+            flex-direction: row; /* Changed to row for side-by-side layout */
+            justify-content: space-around; /* Distribute space between outer and inner arrays */
+            align-items: flex-start; /* Align items to the top of the row */
+            margin-bottom: 20px;
+            width: 100%; /* Ensure it takes available width */
+            gap: 20px; /* Space between the two main array blocks */
+        }
+        .outer-array {
+            display: flex;
+            flex-direction: column; /* Keep cells stacked */
+            align-items: center; /* Center cells horizontally within outer array */
+            background-color: #e0e7ff; /* Lighter indigo */
+            border: 2px solid #6366f1; /* Indigo */
+            border-radius: 0.5rem;
+            padding: 10px;
+            position: relative;
+            z-index: 1; /* Ensure outer array is above lines */
+            flex: 1; /* Allow it to grow */
+            max-width: 45%; /* Limit its width on the left side */
+        }
+        .outer-cell {
+            background-color: #c7d2fe; /* Even lighter indigo */
+            border: 1px solid #818cf8;
+            border-radius: 0.375rem;
+            padding: 15px 20px;
+            margin: 5px;
+            font-weight: bold;
+            color: #4338ca; /* Darker indigo text */
+            min-width: 80px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .inner-array-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end; /* Align inner arrays to the right */
+            flex: 1; /* Allow it to grow */
+            max-width: 50%; /* Allow more space for potentially wider inner arrays on the right */
+            gap: 15px; /* Space between inner arrays */
+        }
+        .inner-array {
+            display: flex;
+            background-color: #d1fae5; /* Light green */
+            border: 2px solid #34d399; /* Green */
+            border-radius: 0.5rem;
+            padding: 8px;
+            justify-content: flex-end; /* Align cells within inner array to the right */
+            align-items: center;
+            position: relative;
+            /* Removed left and transform for centering as they conflict with right alignment */
+            margin-left: auto; /* Push the inner array to the right within its container */
+            min-width: fit-content; /* Ensure it wraps content */
+        }
+        .inner-cell {
+            background-color: #a7f3d0; /* Even lighter green */
+            border: 1px solid #6ee7b7;
+            border-radius: 0.375rem;
+            padding: 10px 15px;
+            margin: 3px;
+            color: #065f46; /* Darker green text */
+            font-size: 0.9em;
+            text-align: center;
+            white-space: nowrap; /* Prevent numbers from wrapping */
+        }
+        .label {
+            font-size: 0.8em;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+        .code-snippet {
+            background-color: #f0f0f0;
+            border-radius: 0.5rem;
+            padding: 10px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            font-size: 0.85rem;
+            color: #333;
+            text-align: left;
+            margin-top: 20px;
+        }
+        .connection-line {
+            position: absolute;
+            height: 2px; /* Thickness of the line */
+            background-color: #9333ea; /* Purple line */
+            z-index: 0; /* Behind array boxes */
+            transform-origin: 0 0; /* Rotate from the start point */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .array-box {
+                flex-direction: column; /* Stack elements back vertically on small screens */
+                align-items: center;
+            }
+            .outer-array, .inner-array-container {
+                max-width: 100%; /* Take full width */
+                width: 100%;
+            }
+            .outer-array {
+                margin-bottom: 20px; /* Add space between stacked arrays */
+            }
+            .outer-cell, .inner-cell {
+                width: auto; /* Allow auto width */
+                min-width: unset; /* Remove min-width constraint */
+            }
+            .inner-array {
+                flex-wrap: wrap; /* Allow items to wrap if they don't fit */
+                justify-content: center; /* Center items when wrapped */
+                margin-left: unset; /* Remove auto margin */
+            }
+            .inner-array-container {
+                align-items: center; /* Center inner arrays within their container */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Java Jagged Array</h1>
+        <p class="text-gray-600 mb-6">
+            A visual explanation of how a jagged array works in Java: an array of arrays, where each inner array can have a different length.
+        </p>
+
+        <div class="array-box">
+            <div id="outer-array" class="outer-array">
+                <div class="outer-cell" id="outer-cell-0">
+                    `index 0`<br>
+                    <span class="label">classroomScores[0]</span>
+                </div>
+                <div class="outer-cell" id="outer-cell-1">
+                    `index 1`<br>
+                    <span class="label">classroomScores[1]</span>
+                </div>
+                <div class="outer-cell" id="outer-cell-2">
+                    `index 2`<br>
+                    <span class="label">classroomScores[2]</span>
+                </div>
+            </div>
+            <div class="inner-array-container">
+                <div id="inner-array-0" class="inner-array">
+                    <div class="inner-cell">90</div>
+                    <div class="inner-cell">85</div>
+                    <div class="inner-cell">92</div>
+                    <div class="inner-cell">78</div>
+                </div>
+                <div id="inner-array-1" class="inner-array">
+                    <div class="inner-cell">75</div>
+                    <div class="inner-cell">88</div>
+                </div>
+                <div id="inner-array-2" class="inner-array">
+                    <div class="inner-cell">100</div>
+                    <div class="inner-cell">95</div>
+                    <div class="inner-cell">98</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-snippet">
+            <pre><code>// Step 1 & 2: Declare and instantiate the outer jagged array
+int[][] classroomScores = new int[3][];
+
+// Step 3: Instantiate each inner array with varying lengths
+classroomScores[0] = new int[]{90, 85, 92, 78}; // Student 1 has 4 scores
+classroomScores[1] = new int[]{75, 88};         // Student 2 has 2 scores
+classroomScores[2] = new int[]{100, 95, 98};    // Student 3 has 3 scores
+            </code></pre>
+        </div>
+    </div>
+
+    <script>
+        function drawConnections() {
+            const outerCells = [
+                document.getElementById('outer-cell-0'),
+                document.getElementById('outer-cell-1'),
+                document.getElementById('outer-cell-2')
+            ];
+            const innerArrays = [
+                document.getElementById('inner-array-0'),
+                document.getElementById('inner-array-1'),
+                document.getElementById('inner-array-2')
+            ];
+
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+
+            // Clear previous lines
+            document.querySelectorAll('.connection-line').forEach(line => line.remove());
+
+            outerCells.forEach((outerCell, index) => {
+                const innerArray = innerArrays[index];
+                if (!outerCell || !innerArray) return;
+
+                const outerRect = outerCell.getBoundingClientRect();
+                const innerRect = innerArray.getBoundingClientRect();
+
+                // Start point: right center of outer cell, relative to container
+                const startX = outerRect.right - containerRect.left;
+                const startY = outerRect.top + outerRect.height / 2 - containerRect.top;
+
+                // End point: left center of inner array, relative to container
+                const endX = innerRect.left - containerRect.left;
+                const endY = innerRect.top + innerRect.height / 2 - containerRect.top;
+
+                // Calculate length and angle for a direct line
+                const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+
+                const line = document.createElement('div');
+                line.classList.add('connection-line');
+                line.style.left = `${startX}px`;
+                line.style.top = `${startY}px`;
+                line.style.width = `${length}px`;
+                line.style.transform = `rotate(${angle}deg)`;
+                container.appendChild(line);
+            });
+        }
+
+        // Draw connections on load and resize
+        window.addEventListener('load', drawConnections);
+        window.addEventListener('resize', drawConnections);
+    </script>
+</body>
+</html>

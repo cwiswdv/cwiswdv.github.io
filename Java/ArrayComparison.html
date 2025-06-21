@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C# vs Java Arrays: A Comparison for Community College Students</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for better readability */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            color: #333; /* Darker text */
+        }
+        /* Style for the table */
+        table {
+            width: 100%;
+            border-collapse: separate; /* Allows for rounded corners on cells */
+            border-spacing: 0; /* Remove default cell spacing */
+        }
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e5e7eb; /* Light border for rows */
+            text-align: left;
+        }
+        th {
+            background-color: #4f46e5; /* Indigo header background */
+            color: white;
+            font-weight: 600;
+        }
+        tr:last-child td {
+            border-bottom: none; /* No border on the last row */
+        }
+        tr:nth-child(even) {
+            background-color: #eff6ff; /* Light blue for even rows */
+        }
+        /* Rounded corners for the table and cells */
+        table {
+            border-radius: 0.75rem; /* rounded-xl */
+            overflow: hidden; /* Ensures child elements respect border-radius */
+        }
+        th:first-child {
+            border-top-left-radius: 0.75rem;
+        }
+        th:last-child {
+            border-top-right-radius: 0.75rem;
+        }
+        /* Specific styling for the "Multi-Dimension" row for better visual separation */
+        .multidim-header {
+            font-weight: 700; /* Extra bold */
+            background-color: #dbeafe; /* Lighter blue background */
+            color: #1e40af; /* Dark blue text */
+        }
+        .multidim-subheader {
+             font-weight: 600; /* Semi-bold */
+             color: #2563eb; /* Medium blue text */
+        }
+    </style>
+</head>
+<body class="p-0"> <!-- Removed body padding -->
+    <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-xl p-6 sm:p-8 md:p-10 mt-4 mb-4"> <!-- Increased max-width and added margin-top/bottom -->
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6 text-indigo-700">
+            C# vs Java Arrays: A Comparison
+        </h1>
+        <p class="text-lg text-gray-700 mb-8 text-center">
+            Here's a simplified breakdown of the differences between arrays in C# and Java, designed to be easy to understand for community college students.
+        </p>
+
+        <div class="overflow-x-auto rounded-xl shadow-md">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-indigo-600">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tl-xl">
+                            Feature
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                            C# Arrays
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider rounded-tr-xl">
+                            Java Arrays
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <!-- Basic Idea -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                            Basic Idea
+                        </td>
+                        <td class="px-6 py-4">
+                            A way to store a fixed-size collection of items of the same type.
+                        </td>
+                        <td class="px-6 py-4">
+                            A way to store a fixed-size collection of items of the same type.
+                        </td>
+                    </tr>
+                    <!-- Single-Dimension -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                            Single-Dimension
+                        </td>
+                        <td class="px-6 py-4 font-mono text-sm bg-gray-50 rounded-md">
+                            `int[] numbers = new int[5];`
+                        </td>
+                        <td class="px-6 py-4 font-mono text-sm bg-gray-50 rounded-md">
+                            `int[] numbers = new int[5];`
+                        </td>
+                    </tr>
+                    <!-- Multi-Dimension Header -->
+                    <tr class="multidim-header">
+                        <td class="px-6 py-4 whitespace-nowrap font-bold text-indigo-800" colspan="1">
+                            Multi-Dimension
+                        </td>
+                        <td class="px-6 py-4 font-bold text-indigo-800">
+                            **Two Types!**
+                        </td>
+                        <td class="px-6 py-4 font-bold text-indigo-800">
+                            **One Main Type (looks like two!)**
+                        </td>
+                    </tr>
+                    <!-- Multi-Dimension C# Rectangular -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                        <td class="px-6 py-4">
+                            <span class="multidim-subheader">1. Rectangular (true grid):</span><br>
+                            <span class="font-mono text-sm bg-gray-50 rounded-md block mt-1">`int[,] matrix = new int[3, 4];`</span>
+                            <span class="text-xs text-gray-500">(Like a spreadsheet)</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="multidim-subheader">1. "Jagged" (array of arrays):</span><br>
+                            <span class="font-mono text-sm bg-gray-50 rounded-md block mt-1">`int[][] matrix = new int[3][];`</span>
+                            <span class="text-xs text-gray-500">(Each row can be different length)</span>
+                        </td>
+                    </tr>
+                    <!-- Multi-Dimension C# Jagged -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                        <td class="px-6 py-4">
+                            <span class="multidim-subheader">2. Jagged (array of arrays):</span><br>
+                            <span class="font-mono text-sm bg-gray-50 rounded-md block mt-1">`int[][] jagged = new int[3][];`</span>
+                            <span class="text-xs text-gray-500">(Each inner array can be different length)</span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-500">
+                            *(Java does this by default for multi-dim)*
+                        </td>
+                    </tr>
+                    <!-- All an Object? -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                            All an Object?
+                        </td>
+                        <td class="px-6 py-4">
+                            **Yes!** Even numbers are treated like objects.
+                        </td>
+                        <td class="px-6 py-4">
+                            **Mostly yes.** Arrays are objects, but basic numbers (like `int`) are special.
+                        </td>
+                    </tr>
+                    <!-- Default Values -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                            Default Values
+                        </td>
+                        <td class="px-6 py-4">
+                            `0` for numbers, `false` for true/false, `null` for objects.
+                        </td>
+                        <td class="px-6 py-4">
+                            `0` for numbers, `false` for true/false, `null` for objects.
+                        </td>
+                    </tr>
+                    <!-- How to get Length -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                            How to get Length
+                        </td>
+                        <td class="px-6 py-4 font-mono text-sm bg-gray-50 rounded-md">
+                            `myArray.Length` (It's a "property")
+                        </td>
+                        <td class="px-6 py-4 font-mono text-sm bg-gray-50 rounded-md">
+                            `myArray.length` (It's a "field")
+                        </td>
+                    </tr>
+                    <!-- Looping (Easy Way) -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                            Looping (Easy Way)
+                        </td>
+                        <td class="px-6 py-4 font-mono text-sm bg-gray-50 rounded-md">
+                            `foreach (int num in numbers)`
+                        </td>
+                        <td class="px-6 py-4 font-mono text-sm bg-gray-50 rounded-md">
+                            `for (int num : numbers)`
+                        </td>
+                    </tr>
+                    <!-- Copying -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                            Copying
+                        </td>
+                        <td class="px-6 py-4">
+                            `System.Array.Copy()`, LINQ (`.ToList()`, `.ToArray()`)
+                        </td>
+                        <td class="px-6 py-4">
+                            `System.arraycopy()`
+                        </td>
+                    </tr>
+                    <!-- Comparing Arrays -->
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                            Comparing Arrays
+                        </td>
+                        <td class="px-6 py-4">
+                            Checks if they are the *exact same array in memory*, not if content is same. You need to check element by element.
+                        </td>
+                        <td class="px-6 py-4">
+                            Checks if they are the *exact same array in memory*, not if content is same. You need to check element by element or use `Arrays.equals()`.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="text-lg text-gray-700 mt-8 text-center">
+            **Simple Takeaway:** Both C# and Java arrays are very similar for basic, single-row lists of items. The biggest difference is how they handle "tables" (multidimensional arrays). C# gives you two distinct ways, while Java's primary way is like "a list of lists" where each inner list can be a different size.
+        </p>
+    </div>
+</body>
+</html>
