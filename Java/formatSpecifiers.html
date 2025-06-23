@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Java Format Specifiers Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Slate and Indigo -->
+    <!-- Application Structure Plan: The SPA uses a two-column layout: a left-hand navigation sidebar listing all format specifiers and a right-hand main content area. Clicking a specifier in the sidebar dynamically updates the content area to show its description, an interactive example, and the resulting output. This task-oriented, "explorer" design is chosen over a static table to promote active learning and discovery, making the information more digestible and memorable for students. -->
+    <!-- Visualization & Content Choices: Report Info: Java Format Specifiers table. Goal: Inform & Teach. Viz/Presentation Method: The core is a two-column interactive layout (HTML/Tailwind) with a button-based navigation sidebar. The content area uses dynamically updated text blocks (HTML/JS) for description and output. The key interaction is the use of <input> fields to allow users to modify the values in the example code, with the output updating in real-time. Justification: This interactive approach provides immediate feedback, a core principle of effective learning, and is more engaging than a static table. Library/Method: Vanilla JS for all logic. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        }
+        .code-block {
+            font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", monospace;
+        }
+        #nav-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        #nav-sidebar::-webkit-scrollbar-thumb {
+            background-color: #4f46e5;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-slate-900 tracking-tight">Interactive Java Format Specifiers Guide</h1>
+            <p class="mt-2 text-lg text-slate-600">Select a format specifier from the left menu to see its description and play with a live example.</p>
+        </header>
+
+        <main class="flex flex-col md:flex-row gap-8">
+            
+            <aside id="nav-sidebar" class="w-full md:w-1/4 lg:w-1/5 bg-white p-4 rounded-xl shadow-md h-full md:max-h-[60vh] overflow-y-auto">
+                <h2 class="text-lg font-semibold text-slate-900 mb-3 border-b pb-2">Specifiers</h2>
+                <nav id="specifier-nav" class="space-y-1">
+                </nav>
+            </aside>
+
+            <section id="content-area" class="w-full md:w-3/4 lg:w-4/5 bg-white p-6 sm:p-8 rounded-xl shadow-md">
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+    const specifierData = [
+        {
+            id: 'd',
+            spec: '%d',
+            name: 'Decimal Integer',
+            description: 'Formats integer values (byte, short, int, long) as a decimal number.',
+            interactive: { type: 'number', label: 'Enter an integer:', defaultValue: 12345 },
+            example: (value) => ({
+                code: `long number = ${value || 0}L;\nSystem.out.printf("Formatted: %d", number);`,
+                output: (value || 0).toString()
+            })
+        },
+        {
+            id: 'f',
+            spec: '%f',
+            name: 'Floating-Point',
+            description: 'Formats floating-point values (float, double) as a decimal number. Use precision (e.g., %.2f) to control decimal places.',
+            interactive: { type: 'float', label1: 'Enter a float:', defaultValue1: 19.995, label2: 'Precision:', defaultValue2: 2 },
+            example: (val1, val2) => {
+                const num = parseFloat(val1) || 0;
+                const precision = parseInt(val2) || 0;
+                return {
+                    code: `double price = ${num};\nSystem.out.printf("Price: %.${precision}f", price);`,
+                    output: `Price: ${num.toFixed(precision)}`
+                }
+            }
+        },
+        {
+            id: 's',
+            spec: '%s',
+            name: 'String',
+            description: 'Formats any value as a string. If the argument is null, it will be formatted as "null".',
+            interactive: { type: 'text', label: 'Enter text:', defaultValue: 'Alice' },
+            example: (value) => ({
+                code: `String name = "${value || ''}";\nSystem.out.printf("Name: %s", name);`,
+                output: `Name: ${value || ''}`
+            })
+        },
+        {
+            id: 'c',
+            spec: '%c',
+            name: 'Character',
+            description: 'Formats the argument as a single character.',
+            interactive: { type: 'text', label: 'Enter a character:', defaultValue: 'J', maxLength: 1 },
+             example: (value) => {
+                const char = (value || ' ')[0];
+                return {
+                    code: `char initial = '${char}';\nSystem.out.printf("Initial: %c", initial);`,
+                    output: `Initial: ${char}`
+                }
+            }
+        },
+        {
+            id: 'b',
+            spec: '%b',
+            name: 'Boolean',
+            description: 'Formats the argument as "true" or "false". If the argument is null, it formats as "false"; otherwise, it\'s "true".',
+            interactive: { type: 'boolean', label: 'Toggle value:', defaultValue: true },
+            example: (value) => ({
+                code: `boolean isActive = ${value};\nSystem.out.printf("Is active: %b", isActive);`,
+                output: `Is active: ${value}`
+            })
+        },
+        {
+            id: 'x',
+            spec: '%x, %X',
+            name: 'Hexadecimal Integer',
+            description: 'Formats an integer as a hexadecimal string. %x for lowercase (ff), %X for uppercase (FF).',
+            interactive: { type: 'number', label: 'Enter an integer:', defaultValue: 255 },
+            example: (value) => ({
+                code: `int num = ${value || 0};\nSystem.out.printf("Lowercase: %x\\n", num);\nSystem.out.printf("Uppercase: %X", num);`,
+                output: `Lowercase: ${(value || 0).toString(16)}\nUppercase: ${(value || 0).toString(16).toUpperCase()}`
+            })
+        },
+        {
+            id: 'o',
+            spec: '%o',
+            name: 'Octal Integer',
+            description: 'Formats an integer as an octal (base-8) string.',
+            interactive: { type: 'number', label: 'Enter an integer:', defaultValue: 64 },
+            example: (value) => ({
+                code: `int num = ${value || 0};\nSystem.out.printf("Octal: %o", num);`,
+                output: `Octal: ${(value || 0).toString(8)}`
+            })
+        },
+        {
+            id: 'e',
+            spec: '%e, %E',
+            name: 'Scientific Notation',
+            description: 'Formats a floating-point number in scientific notation. %e for lowercase, %E for uppercase.',
+            interactive: { type: 'float', label1: 'Enter a number:', defaultValue1: 12345.678, label2: 'Precision:', defaultValue2: 3 },
+            example: (val1, val2) => {
+                const num = parseFloat(val1) || 0;
+                const precision = parseInt(val2) || 0;
+                return {
+                    code: `double num = ${num};\nSystem.out.printf("Lowercase: %.${precision}e\\n", num);\nSystem.out.printf("Uppercase: %.${precision}E", num);`,
+                    output: `Lowercase: ${num.toExponential(precision)}\nUppercase: ${num.toExponential(precision).replace('e', 'E')}`
+                }
+            }
+        },
+        {
+            id: 'h',
+            spec: '%h, %H',
+            name: 'Hash Code',
+            description: 'Formats the argument\'s hash code as a hexadecimal string. Behaves identically to %x applied to `Integer.hashCode()`.',
+            interactive: { type: 'text', label: 'Enter text:', defaultValue: 'hello' },
+            example: (value) => {
+                 let s = value || "";
+                 let hash = 0;
+                 for (let i = 0; i < s.length; i++) {
+                     hash = (hash << 5) - hash + s.charCodeAt(i);
+                     hash |= 0; 
+                 }
+                return {
+                    code: `String data = "${s}";\nSystem.out.printf("Hash: %h", data);`,
+                    output: `Hash: ${hash.toString(16)}`
+                }
+            }
+        },
+        {
+            id: 'n',
+            spec: '%n',
+            name: 'Line Separator',
+            description: 'Inserts a platform-specific line separator. It\'s the recommended way to create new lines for cross-platform compatibility.',
+            interactive: null,
+            example: () => ({
+                code: `System.out.printf("First Line%nSecond Line");`,
+                output: `First Line\nSecond Line`
+            })
+        },
+        {
+            id: 'percent',
+            spec: '%%',
+            name: 'Literal Percent',
+            description: 'Used to print a literal percent sign (%).',
+            interactive: null,
+            example: () => ({
+                code: `System.out.printf("Discount: 15%% off!");`,
+                output: `Discount: 15% off!`
+            })
+        }
+    ];
+
+    const navContainer = document.getElementById('specifier-nav');
+    const contentContainer = document.getElementById('content-area');
+    let currentSpecId = 'd';
+
+    function renderNav() {
+        navContainer.innerHTML = '';
+        specifierData.forEach(spec => {
+            const isActive = spec.id === currentSpecId;
+            const button = document.createElement('button');
+            button.className = `w-full text-left px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
+                isActive 
+                ? 'bg-indigo-600 text-white shadow' 
+                : 'text-slate-700 hover:bg-slate-200 hover:text-slate-900'
+            }`;
+            button.innerHTML = `<span class="code-block mr-2">${spec.spec.padEnd(4, ' ')}</span> ${spec.name}`;
+            button.onclick = () => {
+                currentSpecId = spec.id;
+                renderNav();
+                renderContent();
+            };
+            navContainer.appendChild(button);
+        });
+    }
+
+    function renderContent() {
+        const spec = specifierData.find(s => s.id === currentSpecId);
+        if (!spec) return;
+
+        let interactiveHtml = '';
+        if (spec.interactive) {
+            switch(spec.interactive.type) {
+                case 'number':
+                case 'text':
+                case 'float':
+                     interactiveHtml = `
+                        <label for="interactive-input" class="block text-sm font-medium text-slate-600">${spec.interactive.label}</label>
+                        <input type="${spec.interactive.type === 'float' ? 'number' : spec.interactive.type}" id="interactive-input" value="${spec.interactive.defaultValue}" 
+                               ${spec.interactive.maxLength ? `maxlength="${spec.interactive.maxLength}"` : ''}
+                               ${spec.interactive.type === 'float' ? 'step="any"' : ''}
+                               class="mt-1 block w-full sm:w-1/2 rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">`;
+                    if (spec.interactive.type === 'float' || spec.id === 'e') {
+                         interactiveHtml += `
+                            <label for="interactive-input-2" class="block text-sm font-medium text-slate-600 mt-3">${spec.interactive.label2}</label>
+                            <input type="number" id="interactive-input-2" value="${spec.interactive.defaultValue2}" min="0"
+                                   class="mt-1 block w-full sm:w-1/2 rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">`;
+                    }
+                    break;
+                case 'boolean':
+                    interactiveHtml = `
+                        <label for="interactive-input" class="flex items-center cursor-pointer">
+                            <span class="mr-3 text-sm font-medium text-slate-600">${spec.interactive.label}</span>
+                            <div class="relative">
+                                <input type="checkbox" id="interactive-input" class="sr-only" ${spec.interactive.defaultValue ? 'checked' : ''}>
+                                <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+                                <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                            </div>
+                        </label>
+                        <style>
+                            input:checked ~ .dot { transform: translateX(100%); }
+                            input:checked ~ .block { background-color: #4f46e5; }
+                        </style>
+                    `;
+                    break;
+            }
+        }
+        
+        contentContainer.innerHTML = `
+            <div class="space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-indigo-600 code-block">${spec.spec}</h2>
+                    <p class="mt-1 text-slate-600">${spec.description}</p>
+                </div>
+                
+                ${spec.interactive ? `
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h3 class="text-md font-semibold text-slate-800 mb-3">Interactive Example</h3>
+                    ${interactiveHtml}
+                </div>` : ''}
+
+                <div>
+                    <h3 class="text-md font-semibold text-slate-800 mb-2">Example Code</h3>
+                    <pre class="bg-slate-900 text-white p-4 rounded-lg text-sm code-block overflow-x-auto"><code id="code-output"></code></pre>
+                </div>
+
+                <div>
+                    <h3 class="text-md font-semibold text-slate-800 mb-2">Resulting Output</h3>
+                    <pre class="bg-slate-200 text-slate-800 p-4 rounded-lg text-sm code-block" id="result-output"></pre>
+                </div>
+            </div>
+        `;
+        
+        updateExample();
+        setupEventListeners();
+    }
+
+    function updateExample() {
+        const spec = specifierData.find(s => s.id === currentSpecId);
+        if (!spec) return;
+
+        let val1, val2;
+        if (spec.interactive) {
+            const input1 = document.getElementById('interactive-input');
+            const input2 = document.getElementById('interactive-input-2');
+            val1 = spec.interactive.type === 'boolean' ? input1.checked : input1.value;
+            if(input2) val2 = input2.value;
+        }
+
+        const { code, output } = spec.example(val1, val2);
+        
+        document.getElementById('code-output').textContent = code;
+        document.getElementById('result-output').textContent = output;
+    }
+
+    function setupEventListeners() {
+        const input1 = document.getElementById('interactive-input');
+        const input2 = document.getElementById('interactive-input-2');
+        if (input1) {
+            const eventType = input1.type === 'checkbox' ? 'change' : 'input';
+            input1.addEventListener(eventType, updateExample);
+        }
+        if (input2) {
+            input2.addEventListener('input', updateExample);
+        }
+    }
+
+    function init() {
+        renderNav();
+        renderContent();
+    }
+
+    init();
+    </script>
+</body>
+</html>
